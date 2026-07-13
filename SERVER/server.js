@@ -15,7 +15,8 @@ const app = express();
 
 app.use(cors());
 
-app.use(express.static(path.join(__dirname, "../client")));
+// IMPORTANT: Folder name is CLIENT (uppercase)
+app.use(express.static(path.join(__dirname, "../CLIENT")));
 
 const server = http.createServer(app);
 
@@ -36,7 +37,6 @@ function generateRoomCode() {
     }
 
     return code;
-
 }
 
 io.on("connection", (socket) => {
@@ -64,11 +64,8 @@ io.on("connection", (socket) => {
     socket.on("join-room", (code) => {
 
         if (!roomExists(code)) {
-
             socket.emit("room-error", "Room does not exist");
-
             return;
-
         }
 
         socket.join(code);
@@ -95,16 +92,13 @@ io.on("connection", (socket) => {
 
 });
 
+// IMPORTANT: CLIENT (uppercase)
 app.get("/", (req, res) => {
-
-    res.sendFile(path.join(__dirname, "../client/index.html"));
-
+    res.sendFile(path.join(__dirname, "../CLIENT/index.html"));
 });
 
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
-
     console.log(`Server Running : http://localhost:${PORT}`);
-
 });
