@@ -3,6 +3,7 @@ const http = require("http");
 const socketIO = require("socket.io");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 
 const {
     createRoom,
@@ -15,8 +16,19 @@ const app = express();
 
 app.use(cors());
 
-// IMPORTANT: Folder name is CLIENT (uppercase)
-app.use(express.static(path.join(__dirname, "../CLIENT")));
+// Check Render file paths
+console.log("Current directory:", __dirname);
+
+const clientPath = path.join(__dirname, "../CLIENT");
+
+console.log("CLIENT folder exists:", fs.existsSync(clientPath));
+console.log(
+    "index.html exists:",
+    fs.existsSync(path.join(clientPath, "index.html"))
+);
+
+// Serve frontend
+app.use(express.static(clientPath));
 
 const server = http.createServer(app);
 
@@ -25,6 +37,7 @@ const io = socketIO(server, {
         origin: "*"
     }
 });
+
 
 function generateRoomCode() {
 
@@ -39,9 +52,11 @@ function generateRoomCode() {
     return code;
 }
 
+
 io.on("connection", (socket) => {
 
     console.log("Client Connected");
+
 
     socket.on("create-room", () => {
 
@@ -61,6 +76,72 @@ io.on("connection", (socket) => {
 
     });
 
+
+    socket.on("join-room", (code) => {
+
+        if (!roomExists(code)) {
+
+            socket.emit(
+                "room-error",
+                "Room does not exist"
+            );
+
+            return;
+        }
+
+        socket.join(code);
+
+        socket.emit(
+            "room-joined",
+            getRoomText(code)
+        );
+
+        console.log("Joined:", code);
+
+    });
+
+
+    socket.on("code-update", ({ room, text }) => {
+
+        updateRoom(room, text);
+
+        socket.to(room).emit(
+            "receive-code",
+            text
+        );
+
+    });
+
+
+    socket.on("disconnect", () => {
+
+        console.log("Client Disconnected");
+
+    });
+
+});
+
+
+// Load frontend
+app.get("/", (req, res) => {
+
+    res.sendFile(
+        path.join(clientPath, "index.html")
+    );
+
+});
+
+
+const PORT = process.env.PORT || 3000;
+
+
+server.listen(PORT, () => {
+
+    console.log(
+        `Server Running on port ${PORT}`
+    );
+
+});
     socket.on("join-room", (code) => {
 
         if (!roomExists(code)) {
