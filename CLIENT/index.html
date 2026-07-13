@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CodeShare</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🚀 CodeShare</h1>
+
+    <div class="top">
+
+        <button id="createRoom">
+            Create Room
+        </button>
+
+        <input
+            type="text"
+            id="roomCode"
+            placeholder="Enter Room Code">
+
+        <button id="joinRoom">
+            Join Room
+        </button>
+
+    </div>
+
+    <div id="currentRoom">
+        Not Connected
+    </div>
+
+    <textarea
+        id="editor"
+        placeholder="Start typing your code here..."
+    ></textarea>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
